@@ -3,6 +3,7 @@ import platform
 import sys
 
 import classes
+from notes import Note, NoteBook
 
 
 commands = {}
@@ -243,6 +244,18 @@ def search_handler(*args):
     if not result:
         return "There are no users matching"
     return "\n".join([str(rec) for rec in result])
+
+
+@set_commands("create_note")
+@input_error
+def create_note(*args):
+    """Take as input the text of the note in quotes and adds it to the notebook"""
+    text = " ".join(args)
+    nb = NoteBook.read_from_file()
+    nb.add_note(Note(text))
+
+    nb.save_to_file()
+    return "Note added successfully."
 
 
 @set_commands("exit", "close", "good bye")
