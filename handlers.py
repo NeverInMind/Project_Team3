@@ -94,6 +94,24 @@ def days_to_birthday_handler(*args):
     return data[name.value].days_to_birthday()
 
 
+@set_commands("showbd")
+@input_error
+def show_birthdays_handler(*args):
+    """Take as input number of days and show the list of birthdays.
+    The MAX number of days is 365"""
+    try:
+        value = int(args[0])        
+    except:
+        return "Please enter the valid command: showbd number_of_days"
+    if type(value) == int and value > 0:
+        data = classes.AddressBook.open_file("data.csv")
+        if value > 365:
+            value = 365
+        return data.show_birthday(value)
+    else:
+        return "Please input a valid number of days"
+        
+
 @set_commands("change")
 @input_error
 def change(*args):
