@@ -11,6 +11,8 @@ class WrongPhone(Exception):
 class WrongDate(Exception):
     pass
 
+class WrongEmail(Exception):
+    pass
 
 class Field:
     def __init__(self, value):
@@ -88,6 +90,48 @@ class Birthday(Field):
             self._value = val
         else:
             raise WrongDate("Invalid date. Please enter birthday in format 'DD.MM.YYYY'.")
+class Address:
+    def __init__(self, street="", city="", country="", postcode=""):
+        self.street = street
+        self.city = city
+        self.country = country
+        self.postcode = postcode
+
+    def __str__(self):
+        return f"{self.street},{self.city},{self.country},{self.postcode}"
+
+    def __repr__(self):
+        return f"Address(street='{self.street}', city='{self.city}', country='{self.country}', postcode='{self.postcode}')"
+
+
+class Email:
+    def __init__(self, value=""):
+        self.value = value
+
+    @staticmethod
+    def is_valid_email(email):
+        match = re.search(
+            r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email)
+        return bool(match)
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, val):
+        if self.is_valid_email(val):
+            self._value = val
+
+        else:
+            raise WrongEmail(
+                "Invalid email address. Please enter a correct email address")
+
+    def __str__(self) -> str:
+        return self.value
+
+    def __repr__(self) -> str:
+        return str(self)
 
 
 class Record:
@@ -170,6 +214,14 @@ class AddressBook(UserDict):
                     if text in phone.value:
                         result.append(record)
                         break
+        elif field.lower() == "address":
+            for record in self.data.values():
+                if text.lower() in str(record.address).lower():
+                    result.append(record)
+        elif field.lower() == "email":
+            for record in self.data.values():
+                if text.lower() in record.email.value.lower():
+                    result.append(record)
         return result
     
     @classmethod

@@ -30,6 +30,8 @@ def input_error(func):
             return "You tried to enter an invalid phone number. Please check the value and try again"
         except classes.WrongDate:
             return "Invalid date. Please enter birthday in format 'DD.MM.YYYY'."
+        except classes.WrongEmail:
+            return "Invalid email address. Please enter a correct email address."
     # Рядок нижче потрібний для того, щоб пов'язати функції та їх рядки документації.
     # Це потрібно для функції help.
     inner.__doc__ = func.__doc__
@@ -39,7 +41,7 @@ def input_error(func):
 @set_commands("add")
 @input_error
 def add(*args):
-    """Take as input username, phone number, birthday and add them to the base.
+    """Take as input username, phone number, birthday, address, email and add them to the base.
     If username already exist add phone number to this user."""
     name = classes.Name(args[0])
     # Два блоки if, розміщених нижче відповідають за правильність введення телефону
@@ -55,7 +57,14 @@ def add(*args):
             birthday = classes.Birthday(args[2])
         else:
             raise classes.WrongDate
+    address = classes.Address(street=args[3], city=args[4],
+                              country=args[5], postcode=args[6])
 
+    email_value = args[7]
+    if not classes.Email.is_valid_email(email_value):
+        raise classes.WrongEmail
+
+    email = classes.Email(email_value)
     # У змінній data зберігається екземпляр класу AddressBook із записаними раніше контактами
     # Змінна name_exists показує, чи існує контакт з таким ім'ям у data
     data = classes.AddressBook.open_file("data.csv")
@@ -72,7 +81,7 @@ def add(*args):
     elif not phone_number:
         raise IndexError
     else:
-        record = classes.Record(name, phone_number, birthday)
+        record = classes.Record(name, phone_number, birthday, address, email)
         data.add_record(record)
         msg = f"User {name} added successfully."
 
@@ -243,6 +252,48 @@ def search_handler(*args):
     if not result:
         return "There are no users matching"
     return "\n".join([str(rec) for rec in result])
+
+@set_commands("address")
+@input_error
+def address(*args):
+    """Take the input username and show the address"""
+    name = classes.Name(args[0])
+
+    data = classes.AddressBook.open_file("data.csv")
+    name_exists = bool(data.get(name.value))
+
+    if not name_exists:
+        return f"Name {name} doesn't exist"
+
+    else:
+        address_str = str(data[name.value].address)
+        if address_str:
+            return f"Address for {name}: {address_str}."
+
+        else:
+            return f"There is no address for user {name}."
+
+
+@set_commands("email")
+@input_error
+def email(*args):
+    """Take the input username and show the address"""
+    name = classes.Name(args[0])
+    data = classes.AddressBook.open_file("data.csv")
+    name_exists = bool(data.get(name.value))
+
+    if not name_exists:
+        return f"Name {name} doesn't exist."
+
+    else:
+        email_str = str(data[name.value].email)
+
+        if email_str:
+            return f"Email for {name}: {email_str}."
+
+        else:
+            return f"There isn't email for user {name}."
+
 
 
 @set_commands("exit", "close", "good bye")
