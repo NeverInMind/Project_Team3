@@ -36,7 +36,7 @@ def input_error(func):
     inner.__doc__ = func.__doc__
     return inner
 
-
+#vova_test2
 @set_commands("add")
 @input_error
 def add(*args):
