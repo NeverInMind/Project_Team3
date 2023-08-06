@@ -4,7 +4,12 @@ import sys
 
 import classes
 
+
 commands = {}
+
+# Декоратор set_commands створений для наповнення словника commands
+# Ключами є команда, котра передається у якості аргумента name та, за потреби,
+# additional. Значеннями є функції, що виконуються при введенні команди
 
 
 def set_commands(name, *additional):
@@ -25,10 +30,8 @@ def input_error(func):
             return "You tried to enter an invalid phone number. Please check the value and try again"
         except classes.WrongDate:
             return "Invalid date. Please enter birthday in format 'DD.MM.YYYY'."
-
-        except classes.WrongEmail:
-            return "Invalid email address. Please enter a correct email address."
-
+    # Рядок нижче потрібний для того, щоб пов'язати функції та їх рядки документації.
+    # Це потрібно для функції help.
     inner.__doc__ = func.__doc__
     return inner
 
@@ -36,9 +39,12 @@ def input_error(func):
 @set_commands("add")
 @input_error
 def add(*args):
-    """Take as input username, phone number, birthday, address, email and add them to the base.
+    """Take as input username, phone number, birthday and add them to the base.
     If username already exist add phone number to this user."""
     name = classes.Name(args[0])
+    # Два блоки if, розміщених нижче відповідають за правильність введення телефону
+    # та дня народження. Якщо значення невалідне, викликається помилка, що потім обробляється
+    # деораторот input_error
     if classes.Phone.is_valid_phone(args[1]):
         phone_number = classes.Phone(args[1])
     else:
@@ -50,24 +56,23 @@ def add(*args):
         else:
             raise classes.WrongDate
 
-    address = classes.Address(street=args[3], city=args[4],
-                              country=args[5], postcode=args[6])
-
-    email_value = args[7]
-    if not classes.Email.is_valid_email(email_value):
-        raise classes.WrongEmail
-
-    email = classes.Email(email_value)
-
+    # У змінній data зберігається екземпляр класу AddressBook із записаними раніше контактами
+    # Змінна name_exists показує, чи існує контакт з таким ім'ям у data
     data = classes.AddressBook.open_file("data.csv")
     name_exists = bool(data.get(name.value))
 
+    # Тут відбувається перевірка, чи ім'я вже є у списку контактів
+    # Якщо контакт відсутній, створюється новий Record.
+    # Якщо присутній - до існуючого екземпляру Record додається номер телефону
     if name_exists and phone_number:
+        # Методи класу Record повертають повідомлення для користувача
+        # Дані повідомлення записуються у змінну та повертаються з функції
+        # для показу користувачу
         msg = data[name.value].add_phone(phone_number)
     elif not phone_number:
         raise IndexError
     else:
-        record = classes.Record(name, phone_number, birthday, address, email)
+        record = classes.Record(name, phone_number, birthday)
         data.add_record(record)
         msg = f"User {name} added successfully."
 
@@ -119,6 +124,8 @@ def change(*args):
 @input_error
 def clear(*args):
     """Clear the console."""
+    # Дана функція відповідальна за очищення консолі.
+    # Darwin це macOS
     system = platform.system()
     if system == "Windows":
         os.system("cls")
@@ -176,6 +183,11 @@ def hello(*args):
 @input_error
 def help_command(*args):
     """Show all commands available."""
+    # Даний метод виводить користувачу перелік усіх команд з описом.
+    # Створюється рядок all_commands, що наповнюється у циклі.
+    # command це ключі в словнику commands.
+    # func - значення. func.__doc__ це рядок документації, що додатково
+    # прив'язувався до функції у декораторі input_error
     all_commands = ""
     for command, func in commands.items():
         all_commands += f"{command}: {func.__doc__}\n"
@@ -195,7 +207,8 @@ def phone(*args):
         return f"Name {name} doesn`t exists. "\
             "If you want to add it, please type 'add <name> <phone number>'."
     else:
-
+        # У цьому рядку список телефонів перетворюється у рядок,
+        # де номері перелічені через кому
         phone_numbers = ", ".join(str(phone)
                                   for phone in data[name.value].phones)
         if phone_numbers:
@@ -208,6 +221,8 @@ def phone(*args):
 @input_error
 def show_all(*args):
     """Show all users."""
+    # Код функції show_all має саме такий вигляд тому, що AddressBook
+    # це ітератор
     return classes.AddressBook.open_file("data.csv")
 
 
@@ -235,49 +250,6 @@ def search_handler(*args):
 def exit(*args):
     """Interrupt program."""
     sys.exit(0)
-
-
-@set_commands("address")
-@input_error
-def address(*args):
-    """Take the input username and show the address"""
-    name = classes.Name(args[0])
-
-    data = classes.AddressBook.open_file("data.csv")
-    name_exists = bool(data.get(name.value))
-
-    if not name_exists:
-        return f"Name {name} doesn't exist"
-
-    else:
-        address_str = str(data[name.value].address)
-        if address_str:
-            return f"Address for {name}: {address_str}."
-
-        else:
-            return f"There is no address for user {name}."
-
-
-@set_commands("email")
-@input_error
-def email(*args):
-    """Take the input username and show the address"""
-    name = classes.Name(args[0])
-    data = classes.AddressBook.open_file("data.csv")
-    name_exists = bool(data.get(name.value))
-
-    if not name_exists:
-        return f"Name {name} doesn't exist."
-
-    else:
-        email_str = str(data[name.value].email)
-
-        if email_str:
-            return f"Email for {name}: {email_str}."
-
-        else:
-            return f"There isn't email for user {name}."
-
 
 # Для того, щоб дадати нові команди до бота достатньо просто
 # тут написати іх код з відповідними декораторами та docstring.
