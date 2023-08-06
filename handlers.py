@@ -11,7 +11,7 @@ commands = {}
 # Ключами є команда, котра передається у якості аргумента name та, за потреби,
 # additional. Значеннями є функції, що виконуються при введенні команди
 #vova_test1
-
+#vova_test1
 def set_commands(name, *additional):
     def inner(func):
         commands[name] = func
