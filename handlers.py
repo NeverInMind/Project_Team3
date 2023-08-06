@@ -19,7 +19,6 @@ def set_commands(name, *additional):
             commands[command] = func
     return inner
 
-
 def input_error(func):
     def inner(*args):
         try:
