@@ -7,11 +7,11 @@
 How to install me
 ``pip install package``
 
-What i can do
+What I can do
 * Create a contact book for you by command ``add``
 * Tell us who has a birthday in the coming N days ``showbd N`` (N - numbers of days)
 * Create notes for you
-* And many intresting
+* And many intresting things
 
 You can find out the full list of my capabilities by installing me and entering the command ``help``
 
