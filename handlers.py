@@ -13,7 +13,7 @@ commands = {}
 
 #new comment
 
-#another test
+
 def set_commands(name, *additional):
     def inner(func):
         commands[name] = func
