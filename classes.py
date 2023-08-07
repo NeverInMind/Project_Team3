@@ -152,7 +152,10 @@ class Record:
         # Володя: +123456987456, 23456987456. Birthday: 21.01.1978
         phones = ", ".join([str(phone) for phone in self.phones])
         birthday = f"Birthday: {self.birthday}" if self.birthday.value else ""
-        return f"{self.name.value}: {phones}. {birthday}"
+        address_str = f"Address: {self.address}" if self.address else ""
+        email_str = f"Email: {self.email}" if self.email else ""
+        return f"{self.name.value}: {phones}, {birthday}, {address_str}, {email_str}"
+
 
     def __repr__(self):
         return str(self)
@@ -229,32 +232,6 @@ class AddressBook(UserDict):
             for record in self.data.values():
                 if text.lower() in record.email.value.lower():
                     result.append(record)
-        return result
-
-    def show_birthday(self, days: int):
-        result_list = []
-        result = f"Birthdays within {days} days:\n"
-        start_date = date.today()
-        end_date = date.today() + timedelta(days)
-        for record in self.data.values():
-            if record.birthday.value:
-                birthday = datetime.strptime(
-                    str(record.birthday.value), "%d.%m.%Y").date()
-                birthday = birthday.replace(year=start_date.year)
-                if birthday < start_date:
-                    birthday = birthday.replace(year=start_date.year+1)
-                if start_date <= birthday <= end_date:
-                    result_list.append([birthday, record.name])
-        for i in range(0, days):
-            date_ = start_date + timedelta(i)
-            for r in result_list:
-                if r[0] == date_:
-                    result += f'{date_.strftime("%d.%m.%Y")}: {r[1]}\n'
-        if not result_list:
-            if days == 1:
-                return f"There are no birthdays to show within {days} day"
-            else:
-                return f"There are no birthdays to show within {days} days"
         return result
 
     def show_birthday(self, days: int):
