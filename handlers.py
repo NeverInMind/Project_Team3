@@ -19,6 +19,7 @@ def set_commands(name, *additional):
             commands[command] = func
     return inner
 
+
 def input_error(func):
     def inner(*args):
         try:
@@ -36,7 +37,9 @@ def input_error(func):
     inner.__doc__ = func.__doc__
     return inner
 
-#vova_test2
+# vova_test2
+
+
 @set_commands("add")
 @input_error
 def add(*args):
@@ -47,7 +50,7 @@ def add(*args):
     # та дня народження. Якщо значення невалідне, викликається помилка, що потім обробляється
     # деораторот input_error
     if classes.Phone.is_valid_phone(args[1]):
-        phone_number = classes.Phone(args[1])
+        phone_number = [classes.Phone(args[1])]
     else:
         raise classes.WrongPhone
     birthday = None
@@ -66,7 +69,7 @@ def add(*args):
     email = classes.Email(email_value)
     # У змінній data зберігається екземпляр класу AddressBook із записаними раніше контактами
     # Змінна name_exists показує, чи існує контакт з таким ім'ям у data
-    data = classes.AddressBook.open_file("data.csv")
+    data = classes.AddressBook.open_file("data.json")
     name_exists = bool(data.get(name.value))
 
     # Тут відбувається перевірка, чи ім'я вже є у списку контактів
@@ -84,7 +87,7 @@ def add(*args):
         data.add_record(record)
         msg = f"User {name} added successfully."
 
-    data.write_to_csv("data.csv")
+    data.write_to_file("data.json")
     return msg
 
 
@@ -93,7 +96,7 @@ def add(*args):
 def days_to_birthday_handler(*args):
     """Take as input username and show the number of days until his birthday"""
     name = classes.Name(args[0])
-    data = classes.AddressBook.open_file("data.csv")
+    data = classes.AddressBook.open_file("data.json")
     name_exists = bool(data.get(name.value))
 
     if not name_exists:
@@ -108,17 +111,17 @@ def show_birthdays_handler(*args):
     """Take as input number of days and show the list of birthdays.
     The MAX number of days is 365"""
     try:
-        value = int(args[0])        
+        value = int(args[0])
     except:
         return "Please enter the valid command: showbd number_of_days"
     if type(value) == int and value > 0:
-        data = classes.AddressBook.open_file("data.csv")
+        data = classes.AddressBook.open_file("data.json")
         if value > 365:
             value = 365
         return data.show_birthday(value)
     else:
         return "Please input a valid number of days"
-        
+
 
 @set_commands("change")
 @input_error
@@ -133,7 +136,7 @@ def change(*args):
     else:
         raise classes.WrongPhone
 
-    data = classes.AddressBook.open_file("data.csv")
+    data = classes.AddressBook.open_file("data.json")
     name_exists = bool(data.get(name.value))
 
     if not name_exists:
@@ -142,7 +145,7 @@ def change(*args):
     else:
         msg = data[name.value].change_phone(old_phone, new_phone)
 
-    data.write_to_csv("data.csv")
+    data.write_to_file("data.json")
     return msg
 
 
@@ -167,7 +170,7 @@ def delete_user(*args):
     """Take as input username and delete that user"""
     name = classes.Name(args[0])
 
-    data = classes.AddressBook.open_file("data.csv")
+    data = classes.AddressBook.open_file("data.json")
     name_exists = bool(data.get(name.value))
 
     if not name_exists:
@@ -175,7 +178,7 @@ def delete_user(*args):
     else:
         data.delete_record(name)
 
-    data.write_to_csv("data.csv")
+    data.write_to_file("data.json")
     return f"User {name} deleted successfully."
 
 
@@ -186,7 +189,7 @@ def delete_phone(*args):
     name = classes.Name(args[0])
     phone = classes.Phone(args[1])
 
-    data = classes.AddressBook.open_file("data.csv")
+    data = classes.AddressBook.open_file("data.json")
     name_exists = bool(data.get(name.value))
 
     if not name_exists:
@@ -194,7 +197,7 @@ def delete_phone(*args):
     else:
         msg = data[name.value].delete_phone(phone)
 
-    data.write_to_csv("data.csv")
+    data.write_to_file("data.json")
     return msg
 
 
@@ -226,7 +229,7 @@ def phone(*args):
     """Take as input username and show user`s phone number."""
     name = classes.Name(args[0])
 
-    data = classes.AddressBook.open_file("data.csv")
+    data = classes.AddressBook.open_file("data.json")
     name_exists = bool(data.get(name.value))
 
     if not name_exists:
@@ -249,7 +252,7 @@ def show_all(*args):
     """Show all users."""
     # Код функції show_all має саме такий вигляд тому, що AddressBook
     # це ітератор
-    return classes.AddressBook.open_file("data.csv")
+    return classes.AddressBook.open_file("data.json")
 
 
 @set_commands("search")
@@ -264,11 +267,12 @@ def search_handler(*args):
     text = args[1]
     if field.lower() not in ("name", "phone"):
         return f"Unknown field '{field}'.\nTo see more info enter 'help'"
-    ab = classes.AddressBook.open_file("data.csv")
+    ab = classes.AddressBook.open_file("data.json")
     result = ab.search(field, text)
     if not result:
         return "There are no users matching"
     return "\n".join([str(rec) for rec in result])
+
 
 @set_commands("address")
 @input_error
@@ -276,7 +280,7 @@ def address(*args):
     """Take the input username and show the address"""
     name = classes.Name(args[0])
 
-    data = classes.AddressBook.open_file("data.csv")
+    data = classes.AddressBook.open_file("data.json")
     name_exists = bool(data.get(name.value))
 
     if not name_exists:
@@ -296,7 +300,7 @@ def address(*args):
 def email(*args):
     """Take the input username and show the address"""
     name = classes.Name(args[0])
-    data = classes.AddressBook.open_file("data.csv")
+    data = classes.AddressBook.open_file("data.json")
     name_exists = bool(data.get(name.value))
 
     if not name_exists:
@@ -310,7 +314,6 @@ def email(*args):
 
         else:
             return f"There isn't email for user {name}."
-
 
 
 @set_commands("exit", "close", "good bye")
