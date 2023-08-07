@@ -11,6 +11,8 @@ commands = {}
 # Ключами є команда, котра передається у якості аргумента name та, за потреби,
 # additional. Значеннями є функції, що виконуються при введенні команди
 
+
+
 def set_commands(name, *additional):
     def inner(func):
         commands[name] = func
