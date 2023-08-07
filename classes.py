@@ -107,7 +107,7 @@ class Address:
 class Email:
     def __init__(self, value=""):
         self.value = value
-
+    #Validate email
     @staticmethod
     def is_valid_email(email):
         match = re.search(
