@@ -12,6 +12,8 @@ commands = {}
 # additional. Значеннями є функції, що виконуються при введенні команди
 
 #anoither new comment
+#new comment
+
 def set_commands(name, *additional):
     def inner(func):
         commands[name] = func
