@@ -27,27 +27,26 @@ def input_error(func):
             return func(*args)
         except (IndexError, ValueError):
             return "Enter all require arguments please.\nTo see more info type 'help'."
-        except KeyError:
-            return "Id not found. Please check the value and try again"
         except classes.WrongPhone:
             return "You tried to enter an invalid phone number. Please check the value and try again"
         except classes.WrongDate:
             return "Invalid date. Please enter birthday in format 'DD.MM.YYYY'."
+        except classes.WrongEmail:
+            return "Invalid email address. Please enter a correct email address."
+        except KeyError:
+            return "Id not found. Please check the value and try again"
     # Рядок нижче потрібний для того, щоб пов'язати функції та їх рядки документації.
     # Це потрібно для функції help.
     inner.__doc__ = func.__doc__
     return inner
 
-<<<<<<< HEAD
-=======
 # vova_test2
 
->>>>>>> dev
 
 @set_commands("add")
 @input_error
 def add(*args):
-    """Take as input username, phone number, birthday and add them to the base.
+    """Take as input username, phone number, birthday, address, email and add them to the base.
     If username already exist add phone number to this user."""
     name = classes.Name(args[0])
     # Два блоки if, розміщених нижче відповідають за правильність введення телефону
@@ -63,7 +62,14 @@ def add(*args):
             birthday = classes.Birthday(args[2])
         else:
             raise classes.WrongDate
+    address = classes.Address(street=args[3], city=args[4],
+                              country=args[5], postcode=args[6])
 
+    email_value = args[7]
+    if not classes.Email.is_valid_email(email_value):
+        raise classes.WrongEmail
+
+    email = classes.Email(email_value)
     # У змінній data зберігається екземпляр класу AddressBook із записаними раніше контактами
     # Змінна name_exists показує, чи існує контакт з таким ім'ям у data
     data = classes.AddressBook.open_file("data.json")
@@ -80,7 +86,7 @@ def add(*args):
     elif not phone_number:
         raise IndexError
     else:
-        record = classes.Record(name, phone_number, birthday)
+        record = classes.Record(name, phone_number, birthday, address, email)
         data.add_record(record)
         msg = f"User {name} added successfully."
 
@@ -102,8 +108,6 @@ def days_to_birthday_handler(*args):
     return data[name.value].days_to_birthday()
 
 
-<<<<<<< HEAD
-=======
 @set_commands("showbd")
 @input_error
 def show_birthdays_handler(*args):
@@ -122,7 +126,6 @@ def show_birthdays_handler(*args):
         return "Please input a valid number of days"
 
 
->>>>>>> dev
 @set_commands("change")
 @input_error
 def change(*args):
@@ -274,22 +277,12 @@ def search_handler(*args):
     return "\n".join([str(rec) for rec in result])
 
 
-<<<<<<< HEAD
-@set_commands("create_note")
-=======
 @set_commands("address")
->>>>>>> dev
 @input_error
-def create_note(*args):
-    """Take as input the text of the note in quotes and adds it to the notebook"""
-    text = " ".join(args)
-    nb = NoteBook.read_from_file()
-    nb.add_note(text)
+def address(*args):
+    """Take the input username and show the address"""
+    name = classes.Name(args[0])
 
-<<<<<<< HEAD
-    nb.save_to_file()
-    return "Note added successfully."
-=======
     data = classes.AddressBook.open_file("data.json")
     name_exists = bool(data.get(name.value))
 
@@ -303,39 +296,28 @@ def create_note(*args):
 
         else:
             return f"There is no address for user {name}."
->>>>>>> dev
 
 
-@set_commands("edit_note")
+@set_commands("email")
 @input_error
-<<<<<<< HEAD
-def edit_note(*args):
-    """Take as input note id and change selected note"""
-    note_id = args[0]
-    nb = NoteBook.read_from_file()
-    nb.edit_note(note_id)
-=======
 def email(*args):
     """Take the input username and show the address"""
     name = classes.Name(args[0])
     data = classes.AddressBook.open_file("data.json")
     name_exists = bool(data.get(name.value))
->>>>>>> dev
 
-    nb.save_to_file()
-    return "Note edited successfully."
+    if not name_exists:
+        return f"Name {name} doesn't exist."
 
+    else:
+        email_str = str(data[name.value].email)
 
-@set_commands("del note")
-@input_error
-def del_note(*args):
-    """Take as input note id and delete selected note"""
-    note_id = args[0]
-    nb = NoteBook.read_from_file()
-    nb.del_note(note_id)
+        if email_str:
+            return f"Email for {name}: {email_str}."
 
-    nb.save_to_file()
-    return "Note deleted successfully."
+        else:
+            return f"There isn't email for user {name}."
+
 
 @set_commands("exit", "close", "good bye")
 @input_error
@@ -353,3 +335,48 @@ def exit(*args):
 # def echo(*args):
 #     """Return user`s input"""
 #     return " ".join(args)
+
+
+@set_commands("edit_note")
+@input_error
+def edit_note(*args):
+    """Take as input note id and change selected note"""
+    note_id = args[0]
+    nb = NoteBook.read_from_file()
+    nb.edit_note(note_id)
+
+    nb.save_to_file()
+    return "Note edited successfully."
+
+
+@set_commands("del note")
+@input_error
+def email(*args):
+    """Take the input username and show the address"""
+    name = classes.Name(args[0])
+    data = classes.AddressBook.open_file("data.csv")
+    name_exists = bool(data.get(name.value))
+
+    if not name_exists:
+        return f"Name {name} doesn't exist."
+
+    else:
+        email_str = str(data[name.value].email)
+
+        if email_str:
+            return f"Email for {name}: {email_str}."
+
+        else:
+            return f"There isn't email for user {name}."
+
+
+@set_commands("create_note")
+@input_error
+def create_note(*args):
+    """Take as input the text of the note in quotes and adds it to the notebook"""
+    text = " ".join(args)
+    nb = NoteBook.read_from_file()
+    nb.add_note(text)
+
+    nb.save_to_file()
+    return "Note added successfully."
