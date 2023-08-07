@@ -3,6 +3,7 @@ import platform
 import sys
 
 import classes
+from notes import NoteBook
 
 
 commands = {}
@@ -32,6 +33,8 @@ def input_error(func):
             return "Invalid date. Please enter birthday in format 'DD.MM.YYYY'."
         except classes.WrongEmail:
             return "Invalid email address. Please enter a correct email address."
+        except KeyError:
+            return "Id not found. Please check the value and try again"
     # Рядок нижче потрібний для того, щоб пов'язати функції та їх рядки документації.
     # Це потрібно для функції help.
     inner.__doc__ = func.__doc__
@@ -332,3 +335,48 @@ def exit(*args):
 # def echo(*args):
 #     """Return user`s input"""
 #     return " ".join(args)
+
+
+@set_commands("edit_note")
+@input_error
+def edit_note(*args):
+    """Take as input note id and change selected note"""
+    note_id = args[0]
+    nb = NoteBook.read_from_file()
+    nb.edit_note(note_id)
+
+    nb.save_to_file()
+    return "Note edited successfully."
+
+
+@set_commands("del note")
+@input_error
+def email(*args):
+    """Take the input username and show the address"""
+    name = classes.Name(args[0])
+    data = classes.AddressBook.open_file("data.csv")
+    name_exists = bool(data.get(name.value))
+
+    if not name_exists:
+        return f"Name {name} doesn't exist."
+
+    else:
+        email_str = str(data[name.value].email)
+
+        if email_str:
+            return f"Email for {name}: {email_str}."
+
+        else:
+            return f"There isn't email for user {name}."
+
+
+@set_commands("create_note")
+@input_error
+def create_note(*args):
+    """Take as input the text of the note in quotes and adds it to the notebook"""
+    text = " ".join(args)
+    nb = NoteBook.read_from_file()
+    nb.add_note(text)
+
+    nb.save_to_file()
+    return "Note added successfully."
