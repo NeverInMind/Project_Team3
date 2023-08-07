@@ -1,6 +1,6 @@
 from collections import UserDict
-import csv
 from datetime import datetime, date, timedelta
+import json
 import re
 
 
@@ -11,8 +11,10 @@ class WrongPhone(Exception):
 class WrongDate(Exception):
     pass
 
+
 class WrongEmail(Exception):
     pass
+
 
 class Field:
     def __init__(self, value):
@@ -29,42 +31,42 @@ class Field:
             return self._value == other.value
         return False
 
-    # Додав магічний метод __hash__ тому, що діти класу Field 
+    # Додав магічний метод __hash__ тому, що діти класу Field
     # можуть бути елементами множини(set)
     def __hash__(self):
         return hash(self._value)
-    
-    
+
+
 class Name(Field):
     @property
     def value(self):
         return self._value
-    
+
     @value.setter
     def value(self, val):
         self._value = val
-        
+
 
 class Phone(Field):
 
     @staticmethod
     def is_valid_phone(phone):
-        # Валідація номеру телефону відбувається за 
-        # допомогою регулярнго виразу, що означає: необов'язково +, потім цифра від 1 до 9 
-        # та 11 цифр від 0 до 9. Тобто валідними будуть такі номери +123456987456 та 123456987456, 
+        # Валідація номеру телефону відбувається за
+        # допомогою регулярнго виразу, що означає: необов'язково +, потім цифра від 1 до 9
+        # та 11 цифр від 0 до 9. Тобто валідними будуть такі номери +123456987456 та 123456987456,
         match = re.search(r"^\+?[1-9][\d]{11}$", phone)
         return bool(match)
 
     @property
     def value(self):
         return self._value
-    
+
     @value.setter
     def value(self, val):
         if self.is_valid_phone(val):
             self._value = val
         else:
-            raise WrongPhone("You tried to enter an invalid phone number. " 
+            raise WrongPhone("You tried to enter an invalid phone number. "
                              "Please check the value and try again")
 
 
@@ -72,7 +74,7 @@ class Birthday(Field):
 
     @staticmethod
     def is_valid_date(date):
-        # Валідація дня народження є значно простішою, ніж номеру телефону. 
+        # Валідація дня народження є значно простішою, ніж номеру телефону.
         # Якщо ввід користувача перетворюється у об'єкт datetime то дата валідна
         try:
             datetime.strptime(str(date), "%d.%m.%Y")
@@ -83,13 +85,16 @@ class Birthday(Field):
     @property
     def value(self):
         return self._value
-    
+
     @value.setter
     def value(self, val):
         if self.is_valid_date(val):
             self._value = val
         else:
-            raise WrongDate("Invalid date. Please enter birthday in format 'DD.MM.YYYY'.")
+            raise WrongDate(
+                "Invalid date. Please enter birthday in format 'DD.MM.YYYY'.")
+
+
 class Address:
     def __init__(self, street="", city="", country="", postcode=""):
         self.street = street
@@ -135,13 +140,15 @@ class Email:
 
 
 class Record:
-    def __init__(self, name, phones=None, birthday=None):
+    def __init__(self, name, phones=None, birthday=None, address=None, email=None):
         self.name = name
         self.phones = phones
         self.birthday = birthday
+        self.address = address
+        self.email = email
 
     def __str__(self):
-        # Рядкове представлення Record у форматі 
+        # Рядкове представлення Record у форматі
         # Володя: +123456987456, 23456987456. Birthday: 21.01.1978
         phones = ", ".join([str(phone) for phone in self.phones])
         birthday = f"Birthday: {self.birthday}" if self.birthday.value else ""
@@ -152,13 +159,13 @@ class Record:
 
     def add_phone(self, phone: Phone):
         self.phones.append(phone)
-        # Список телефонів приводиться до множини для того, щоб виключити можливість 
+        # Список телефонів приводиться до множини для того, щоб виключити можливість
         # повторення номеру телефону
         self.phones = list(set(self.phones))
         return f"Phone number {phone} for user {self.name.value} added successfully."
 
     def change_phone(self, old_number: Phone, new_number: Phone):
-        # У списку телефонів знаходиться індекс старого номера та змінює 
+        # У списку телефонів знаходиться індекс старого номера та змінює
         # old_number на new_number
         if old_number not in self.phones:
             return f"Number {old_number} not found."
@@ -174,16 +181,16 @@ class Record:
             return f"Phone number {phone} for user {self.name} deleted successfully."
         except ValueError:
             return f"Phone number {phone} for user {self.name} not found"
-        
+
     def days_to_birthday(self):
         try:
             birthday = datetime.strptime(str(self.birthday), "%d.%m.%Y").date()
         except ValueError:
             return f"No birthday for user {self.name.value}"
-        
+
         today = date.today()
         birthday = birthday.replace(year=today.year)
-        # Якщо цього року вже був день народження, кількість днів рахується до наступного 
+        # Якщо цього року вже був день народження, кількість днів рахується до наступного
         # дня народження
         if birthday < today:
             birthday = birthday.replace(year=today.year+1)
@@ -223,7 +230,7 @@ class AddressBook(UserDict):
                 if text.lower() in record.email.value.lower():
                     result.append(record)
         return result
-    
+
     def show_birthday(self, days: int):
         result_list = []
         result = f"Birthdays within {days} days:\n"
@@ -231,7 +238,8 @@ class AddressBook(UserDict):
         end_date = date.today() + timedelta(days)
         for record in self.data.values():
             if record.birthday.value:
-                birthday = datetime.strptime(str(record.birthday.value), "%d.%m.%Y").date()
+                birthday = datetime.strptime(
+                    str(record.birthday.value), "%d.%m.%Y").date()
                 birthday = birthday.replace(year=start_date.year)
                 if birthday < start_date:
                     birthday = birthday.replace(year=start_date.year+1)
@@ -248,7 +256,7 @@ class AddressBook(UserDict):
             else:
                 return f"There are no birthdays to show within {days} days"
         return result
-    
+
     def show_birthday(self, days: int):
         result_list = []
         result = f"Birthdays within {days} days:\n"
@@ -256,7 +264,8 @@ class AddressBook(UserDict):
         end_date = date.today() + timedelta(days)
         for record in self.data.values():
             if record.birthday.value:
-                birthday = datetime.strptime(str(record.birthday.value), "%d.%m.%Y").date()
+                birthday = datetime.strptime(
+                    str(record.birthday.value), "%d.%m.%Y").date()
                 birthday = birthday.replace(year=start_date.year)
                 if birthday < start_date:
                     birthday = birthday.replace(year=start_date.year+1)
@@ -273,62 +282,67 @@ class AddressBook(UserDict):
             else:
                 return f"There are no birthdays to show within {days} days"
         return result
-    
+
     @classmethod
     def open_file(cls, filename):
         """Take as input filename. Return AddressBook"""
         try:
             with open(filename, encoding="utf-8") as file:
-                reader = csv.DictReader(file)
+                json_data = json.load(file)
                 data = cls()
-                for row in reader:
-                    username = Name(row["Name"])
-                    # Формат csv не пітримує масивів. Тому для запису номерів телефону 
-                    # довелося користатися таким не дуже красивим способом: записувати 
-                    # телефони у як рядки
-                    phones_str = re.sub(r"\[|\]|\ ", "",
-                                        row["Phone numbers"]).split(",")
-                    phones = [Phone(phone) for phone in phones_str]
-                    birthday = Birthday(row["Birthday"])
-                    # Тут з усіх даних створюється Record та записується до data, 
-                    # що є екземпляром AddressBook
-                    record = Record(username, phones, birthday)
-                    data[record.name.value] = record
+                for name, record in json_data.items():
+                    name = Name(name)
+                    phones = [Phone(phone) for phone in record["phones"]]
+                    birthday = Birthday(record["birthday"])
+                    address = Address(**record["address"])
+                    email = Email(record["email"])
+
+                    data.add_record(
+                        Record(name, phones, birthday, address, email))
         except FileNotFoundError:
             data = cls()
         return data
 
-    def write_to_csv(self, filename: str):
-        fieldnames = ["Name", "Phone numbers", "Birthday"]
+    def write_to_file(self, filename: str):
+        json_data = {}
 
-        with open(filename, "w", newline="", encoding="utf-8") as file:
-            writer = csv.DictWriter(file, fieldnames=fieldnames)
-            writer.writeheader()
-            for record in self.data.values():
-                writer.writerow(
-                    {"Name": record.name,
-                    "Phone numbers": record.phones,
-                    "Birthday": record.birthday})
+        for name, record in self.data.items():
+            json_data[name] = {
+                "phones": [phone.value for phone in record.phones],
+                "birthday": record.birthday.value,
+                "address": {
+                    "street": record.address.street,
+                    "city": record.address.city,
+                    "country": record.address.country,
+                    "postcode": record.address.postcode,
+                },
+                "email": record.email.value
+            }
+        with open(filename, "w", encoding="utf-8") as file:
+            json.dump(json_data, file, indent=4, ensure_ascii=False)
 
-
-
-    # Методи __iter__ та __next__ перетворюють елземпляри AddressBook на 
+    # Методи __iter__ та __next__ перетворюють елземпляри AddressBook на
     # ітератори, щоб користувачам показувати одночасно self.page_size записів
+
     def __iter__(self):
         self.current_page = 1
         self.page_size = 10
         self.start_index = (self.current_page - 1) * self.page_size
         self.end_index = self.start_index + self.page_size
         return self
-    
+
     def __next__(self):
         if self.start_index >= len(self.data):
             raise StopIteration
-        
-        page_records = list(self.data.values())[self.start_index:self.end_index]
+
+        page_records = list(self.data.values())[
+            self.start_index:self.end_index]
         self.start_index = self.end_index
         self.end_index = self.start_index + self.page_size
         self.current_page += 1
 
         return page_records
-    
+
+
+if __name__ == "__main__":
+    pass
