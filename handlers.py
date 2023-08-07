@@ -318,24 +318,16 @@ def email(*args):
         else:
             return f"There isn't email for user {name}."
 
-
-@set_commands("exit", "close", "good bye")
+@set_commands("create_note")
 @input_error
-def exit(*args):
-    """Interrupt program."""
-    sys.exit(0)
+def create_note(*args):
+    """Take as input the text of the note in quotes and adds it to the notebook"""
+    text = " ".join(args)
+    nb = NoteBook.read_from_file()
+    nb.add_note(text)
 
-# Для того, щоб дадати нові команди до бота достатньо просто
-# тут написати іх код з відповідними декораторами та docstring.
-# Наприклад, уявімо, що потрібно додати команду, що повертатиме ввід користувача.
-# Якщо розчоментувати кож нижче можна побачити, що команда echo працює успішно
-
-# @set_commands("echo")
-# @input_error
-# def echo(*args):
-#     """Return user`s input"""
-#     return " ".join(args)
-
+    nb.save_to_file()
+    return "Note added successfully."
 
 @set_commands("edit_note")
 @input_error
@@ -347,7 +339,6 @@ def edit_note(*args):
 
     nb.save_to_file()
     return "Note edited successfully."
-
 
 @set_commands("del note")
 @input_error
@@ -369,14 +360,23 @@ def email(*args):
         else:
             return f"There isn't email for user {name}."
 
-
-@set_commands("create_note")
+@set_commands("exit", "close", "good bye")
 @input_error
-def create_note(*args):
-    """Take as input the text of the note in quotes and adds it to the notebook"""
-    text = " ".join(args)
-    nb = NoteBook.read_from_file()
-    nb.add_note(text)
+def exit(*args):
+    """Interrupt program."""
+    sys.exit(0)
 
-    nb.save_to_file()
-    return "Note added successfully."
+# Для того, щоб дадати нові команди до бота достатньо просто
+# тут написати іх код з відповідними декораторами та docstring.
+# Наприклад, уявімо, що потрібно додати команду, що повертатиме ввід користувача.
+# Якщо розчоментувати кож нижче можна побачити, що команда echo працює успішно
+
+# @set_commands("echo")
+# @input_error
+# def echo(*args):
+#     """Return user`s input"""
+#     return " ".join(args)
+
+
+
+
