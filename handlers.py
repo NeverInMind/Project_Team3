@@ -3,7 +3,7 @@ import platform
 import sys
 
 import classes
-from notes import Note, NoteBook
+from notes import NoteBook
 
 
 commands = {}
@@ -27,6 +27,8 @@ def input_error(func):
             return func(*args)
         except (IndexError, ValueError):
             return "Enter all require arguments please.\nTo see more info type 'help'."
+        except KeyError:
+            return "Id not found. Please check the value and try again"
         except classes.WrongPhone:
             return "You tried to enter an invalid phone number. Please check the value and try again"
         except classes.WrongDate:
@@ -252,10 +254,34 @@ def create_note(*args):
     """Take as input the text of the note in quotes and adds it to the notebook"""
     text = " ".join(args)
     nb = NoteBook.read_from_file()
-    nb.add_note(Note(text))
+    nb.add_note(text)
 
     nb.save_to_file()
     return "Note added successfully."
+
+
+@set_commands("edit_note")
+@input_error
+def edit_note(*args):
+    """Take as input note id and change selected note"""
+    note_id = args[0]
+    nb = NoteBook.read_from_file()
+    nb.edit_note(note_id)
+
+    nb.save_to_file()
+    return "Note edited successfully."
+
+
+@set_commands("del note")
+@input_error
+def del_note(*args):
+    """Take as input note id and delete selected note"""
+    note_id = args[0]
+    nb = NoteBook.read_from_file()
+    nb.del_note(note_id)
+
+    nb.save_to_file()
+    return "Note deleted successfully."
 
 
 @set_commands("exit", "close", "good bye")
