@@ -24,20 +24,25 @@ class Note:
         return tags
 
     def __str__(self):
-        return self.text
+        return f"{self.id}: {self.text}"
 
     def __repr__(self):
         return str(self)
 
 
 class NoteBook(UserDict):
-    # У полі all_keywords зберігаються унікальні ключові слова з усіх нотаток
-    all_keywords = set()
+    def __add__(self, other):
+        if isinstance(other, NoteBook):
+            new_notebook = NoteBook()
+            new_notebook.update(self.data)
+            new_notebook.update(other.data)
+            return new_notebook
+        else:
+            raise TypeError("Can only add two NoteBook instances together")
 
     def add_note(self, text: str):
         note_id = str(random.randint(1000, 9999))
         note = Note(text, note_id)
-        self.all_keywords.update(note.keywords)
         self.data[note_id] = note
 
     def edit_note(self, note_id):
@@ -55,6 +60,40 @@ class NoteBook(UserDict):
 
     def del_note(self, note_id):
         del self[note_id]
+
+    def find_notes_by_keyword(self, keyword):
+        result = []
+        for note in self.data.values():
+            if keyword in note.tags:
+                result.append(str(note))
+        if not result:
+            return "There are no notes matching"
+        return "\n".join(result)
+
+    def find_notes_by_text(self, text):
+        result = []
+        for note in self.data.values():
+            if text in note.text:
+                result.append(str(note))
+        if not result:
+            return "There are no notes matching"
+        return "\n".join(result)
+
+    def sort_notes(self, keyword):
+        notes_with_keyword = NoteBook()
+        notes_without_keyword = NoteBook()
+        nb = NoteBook.read_from_file()
+
+        for note in nb.data.values():
+            if keyword.lower() in note.tags:
+                notes_with_keyword[note.id] = note
+            else:
+                notes_without_keyword[note.id] = note
+
+        if not notes_with_keyword:
+            return f"Keyword {keyword} not found"
+
+        return notes_with_keyword + notes_without_keyword
 
     def save_to_file(self):
         result = {}
@@ -78,7 +117,21 @@ class NoteBook(UserDict):
             data = cls()
         return data
 
+    def __iter__(self):
+        self.current_page = 1
+        self.page_size = 10
+        self.start_index = (self.current_page - 1) * self.page_size
+        self.end_index = self.start_index + self.page_size
+        return self
 
-if __name__ == "__main__":
-    nb = NoteBook.read_from_file()
-    print(nb)
+    def __next__(self):
+        if self.start_index >= len(self.data):
+            raise StopIteration
+
+        page_records = list(self.data.values())[
+            self.start_index:self.end_index]
+        self.start_index = self.end_index
+        self.end_index = self.start_index + self.page_size
+        self.current_page += 1
+
+        return page_records

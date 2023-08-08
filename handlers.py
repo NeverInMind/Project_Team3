@@ -318,6 +318,7 @@ def email(*args):
         else:
             return f"There isn't email for user {name}."
 
+
 @set_commands("create_note")
 @input_error
 def create_note(*args):
@@ -329,6 +330,7 @@ def create_note(*args):
     nb.save_to_file()
     return "Note added successfully."
 
+
 @set_commands("edit_note")
 @input_error
 def edit_note(*args):
@@ -339,6 +341,7 @@ def edit_note(*args):
 
     nb.save_to_file()
     return "Note edited successfully."
+
 
 @set_commands("del note")
 @input_error
@@ -360,6 +363,7 @@ def email(*args):
         else:
             return f"There isn't email for user {name}."
 
+
 @set_commands("exit", "close", "good bye")
 @input_error
 def exit(*args):
@@ -378,5 +382,33 @@ def exit(*args):
 #     return " ".join(args)
 
 
+@set_commands("find")
+@input_error
+def find_notes(*args):
+    """Take as input searched field(text or tag)
+    and the text to be found. Returns all found notes"""
+    field = args[0].lower()
+    text = " ".join(args[1:])
+    if field not in ("text", "tag"):
+        return f"Unknown field '{field}'.\nTo see more info enter 'help'"
+    nb = NoteBook.read_from_file()
+    if field == "text":
+        return nb.find_notes_by_text(text)
+    elif field == "tag":
+        return nb.find_notes_by_keyword(text)
 
 
+@set_commands("show notes")
+@input_error
+def show_notes(*args):
+    """Show all notes"""
+    return NoteBook.read_from_file()
+
+
+@set_commands("sort")
+@input_error
+def sort_notes(*args):
+    """Takes a keyword as input and sorts notes by it"""
+    keyword = args[0]
+    nb = NoteBook.read_from_file()
+    return nb.sort_notes(keyword)
