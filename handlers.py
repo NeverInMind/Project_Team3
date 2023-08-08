@@ -252,24 +252,36 @@ def phone(*args):
 @set_commands("show all")
 @input_error
 def show_all(*args):
-    """Show all users."""
+    """Show all users or notes"""
+    field = args[0].lower()
     # Код функції show_all має саме такий вигляд тому, що AddressBook
     # це ітератор
-    return classes.AddressBook.open_file("data.json")
+    if field not in ("users", "notes"):
+        return f"Unknown field {field}. Please type 'users' or 'notes'"
+    if field == "users":
+        return classes.AddressBook.open_file("data.json")
+    return NoteBook.read_from_file()
 
 
 @set_commands("search")
 @input_error
 def search_handler(*args):
-    """Take as input searched field(name or phone)
+    """Take as input searched field(name, phone, tag or text)
     and the text to be found. Returns all found users"""
     # у даній функції користувачу потрібно обрати, у яких полях
     # відбуватиметься пошук(наразі це name або phone) та ввести значення для пошуку.
     #  Функція повертає рядок з переліком усіх контаків
     field = args[0]
-    text = args[1]
-    if field.lower() not in ("name", "phone"):
+    text = " ".join(args[1:])
+    if field.lower() not in ("name", "phone", "tag", "text"):
         return f"Unknown field '{field}'.\nTo see more info enter 'help'"
+
+    nb = NoteBook.read_from_file()
+    if field == "text":
+        return nb.find_notes_by_text(text)
+    elif field == "tag":
+        return nb.find_notes_by_keyword(text)
+
     ab = classes.AddressBook.open_file("data.json")
     result = ab.search(field, text)
     if not result:
@@ -363,28 +375,6 @@ def del_note(*args):
         else:
             return f"There isn't email for user {name}."
 
-@set_commands("find notes")
-@input_error
-def find_notes(*args):
-    """Take as input searched field(text or tag)
-    and the text to be found. Returns all found notes"""
-    field = args[0].lower()
-    text = " ".join(args[1:])
-    if field not in ("text", "tag"):
-        return f"Unknown field '{field}'.\nTo see more info enter 'help'"
-    nb = NoteBook.read_from_file()
-    if field == "text":
-        return nb.find_notes_by_text(text)
-    elif field == "tag":
-        return nb.find_notes_by_keyword(text)
-
-
-@set_commands("show notes")
-@input_error
-def show_notes(*args):
-    """Show all notes"""
-    return NoteBook.read_from_file()
-
 
 @set_commands("sort notes")
 @input_error
@@ -393,6 +383,7 @@ def sort_notes(*args):
     keyword = args[0]
     nb = NoteBook.read_from_file()
     return nb.sort_notes(keyword)
+
 
 @set_commands("exit", "close", "good bye")
 @input_error
