@@ -3,7 +3,7 @@ import platform
 import sys
 
 import classes
-from assistant_Ostap.notes import NoteBook
+from notes import NoteBook
 
 
 commands = {}

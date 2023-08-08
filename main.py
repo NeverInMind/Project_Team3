@@ -5,8 +5,8 @@ from fuzzywuzzy import fuzz, process
 import readline
 
 import classes
-from assistant_Ostap.handlers import commands
-from assistant_Ostap.notes import NoteBook
+from handlers import commands
+from notes import NoteBook
 
 
 # Даний метод відповідає за автозаповнення команд. Якщо у консолі
