@@ -363,25 +363,6 @@ def del_note(*args):
         else:
             return f"There isn't email for user {name}."
 
-
-@set_commands("exit", "close", "good bye")
-@input_error
-def exit(*args):
-    """Interrupt program."""
-    sys.exit(0)
-
-# Для того, щоб дадати нові команди до бота достатньо просто
-# тут написати іх код з відповідними декораторами та docstring.
-# Наприклад, уявімо, що потрібно додати команду, що повертатиме ввід користувача.
-# Якщо розчоментувати кож нижче можна побачити, що команда echo працює успішно
-
-# @set_commands("echo")
-# @input_error
-# def echo(*args):
-#     """Return user`s input"""
-#     return " ".join(args)
-
-
 @set_commands("find notes")
 @input_error
 def find_notes(*args):
@@ -412,3 +393,20 @@ def sort_notes(*args):
     keyword = args[0]
     nb = NoteBook.read_from_file()
     return nb.sort_notes(keyword)
+
+@set_commands("exit", "close", "good bye")
+@input_error
+def exit(*args):
+    """Interrupt program."""
+    sys.exit(0)
+
+# Для того, щоб дадати нові команди до бота достатньо просто
+# тут написати іх код з відповідними декораторами та docstring.
+# Наприклад, уявімо, що потрібно додати команду, що повертатиме ввід користувача.
+# Якщо розчоментувати кож нижче можна побачити, що команда echo працює успішно
+
+# @set_commands("echo")
+# @input_error
+# def echo(*args):
+#     """Return user`s input"""
+#     return " ".join(args)
