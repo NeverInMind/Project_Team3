@@ -31,9 +31,6 @@ class Note:
 
 
 class NoteBook(UserDict):
-    # У полі all_keywords зберігаються унікальні ключові слова з усіх нотаток
-    all_keywords = set()
-
     def __add__(self, other):
         if isinstance(other, NoteBook):
             new_notebook = NoteBook()
@@ -46,7 +43,6 @@ class NoteBook(UserDict):
     def add_note(self, text: str):
         note_id = str(random.randint(1000, 9999))
         note = Note(text, note_id)
-        self.all_keywords.update(note.keywords)
         self.data[note_id] = note
 
     def edit_note(self, note_id):
@@ -93,6 +89,9 @@ class NoteBook(UserDict):
                 notes_with_keyword[note.id] = note
             else:
                 notes_without_keyword[note.id] = note
+
+        if not notes_with_keyword:
+            return f"Keyword {keyword} not found"
 
         return notes_with_keyword + notes_without_keyword
 
