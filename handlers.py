@@ -385,6 +385,8 @@ def exit(*args):
 @set_commands("find")
 @input_error
 def find_notes(*args):
+    """Take as input searched field(text or tag)
+    and the text to be found. Returns all found notes"""
     field = args[0].lower()
     text = " ".join(args[1:])
     if field not in ("text", "tag"):
@@ -399,12 +401,14 @@ def find_notes(*args):
 @set_commands("show notes")
 @input_error
 def show_notes(*args):
+    """Show all notes"""
     return NoteBook.read_from_file()
 
 
 @set_commands("sort")
 @input_error
 def sort_notes(*args):
+    """Takes a keyword as input and sorts notes by it"""
     keyword = args[0]
     nb = NoteBook.read_from_file()
     return nb.sort_notes(keyword)
