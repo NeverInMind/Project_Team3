@@ -273,7 +273,7 @@ def search_handler(*args):
     #  Функція повертає рядок з переліком усіх контаків
     field = args[0]
     text = " ".join(args[1:])
-    if field.lower() not in ("name", "phone", "tag", "text"):
+    if field.lower() not in ("name", "phone", "email", "tag", "text"):
         return f"Unknown field '{field}'.\nTo see more info enter 'help'"
 
     nb = NoteBook.read_from_file()
