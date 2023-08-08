@@ -267,8 +267,8 @@ def search_handler(*args):
     # відбуватиметься пошук(наразі це name або phone) та ввести значення для пошуку.
     #  Функція повертає рядок з переліком усіх контаків
     field = args[0]
-    text = args[1]
-    if field.lower() not in ("name", "phone", "email"):
+    text = " ".join(args[1:])
+    if field.lower() not in ("name", "phone", "email","tag","text"):
         return f"Unknown field '{field}'.\nTo see more info enter 'help'"
     ab = classes.AddressBook.open_file("data.json")
     result = ab.search(field, text)
