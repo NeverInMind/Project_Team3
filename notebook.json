@@ -1,0 +1,23 @@
+{
+    "4082": {
+        "text": "I love #Chess",
+        "id": "4082",
+        "tags": [
+            "chess"
+        ]
+    },
+    "7005": {
+        "text": "I like #Chess",
+        "id": "7005",
+        "tags": [
+            "chess"
+        ]
+    },
+    "7015": {
+        "text": "I like #food",
+        "id": "7015",
+        "tags": [
+            "food"
+        ]
+    }
+}

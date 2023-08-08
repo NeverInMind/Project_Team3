@@ -6,6 +6,7 @@ import readline
 
 import classes
 from handlers import commands
+from notes import NoteBook
 
 
 # Даний метод відповідає за автозаповнення команд. Якщо у консолі
@@ -75,7 +76,7 @@ def main():
         if result:
             # Якщо повернули ітератор(тобто команда show all), проходимося по ньому в циклі,
             #  поступово показуючи записи
-            if isinstance(result, classes.AddressBook):
+            if isinstance(result, classes.AddressBook) or isinstance(result, NoteBook):
                 for page in result:
                     commands["clear"]()
                     print("\n".join([str(i) for i in page]))
