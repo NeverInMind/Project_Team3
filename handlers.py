@@ -345,7 +345,7 @@ def edit_note(*args):
 
 @set_commands("del note")
 @input_error
-def email(*args):
+def del_note(*args):
     """Take the input username and show the address"""
     name = classes.Name(args[0])
     data = classes.AddressBook.open_file("data.csv")
@@ -382,7 +382,7 @@ def exit(*args):
 #     return " ".join(args)
 
 
-@set_commands("find")
+@set_commands("find notes")
 @input_error
 def find_notes(*args):
     """Take as input searched field(text or tag)
@@ -405,7 +405,7 @@ def show_notes(*args):
     return NoteBook.read_from_file()
 
 
-@set_commands("sort")
+@set_commands("sort notes")
 @input_error
 def sort_notes(*args):
     """Takes a keyword as input and sorts notes by it"""
