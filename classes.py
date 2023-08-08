@@ -223,10 +223,6 @@ class AddressBook(UserDict):
                 for phone in record.phones:
                     if text in phone.value:
                         result.append(record)
-        elif field.lower() == "address":
-            for record in self.data.values():
-                if text.lower() in str(record.address).lower():
-                    result.append(record)
         elif field.lower() == "email":
             for record in self.data.values():
                 if text.lower() in record.email.value.lower():
