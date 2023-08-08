@@ -4,6 +4,7 @@ import sys
 
 import classes
 from notes import NoteBook
+from clean import main
 
 
 commands = {}
@@ -40,7 +41,6 @@ def input_error(func):
     inner.__doc__ = func.__doc__
     return inner
 
-# vova_test2
 
 
 @set_commands("add")
@@ -313,7 +313,7 @@ def address(*args):
 @set_commands("email")
 @input_error
 def email(*args):
-    """Take the input username and show the address"""
+    """Take the input username and show the email"""
     name = classes.Name(args[0])
     data = classes.AddressBook.open_file("data.json")
     name_exists = bool(data.get(name.value))
@@ -384,6 +384,11 @@ def sort_notes(*args):
     nb = NoteBook.read_from_file()
     return nb.sort_notes(keyword)
 
+@set_commands("sort files")
+@input_error
+def sort_files(*args):
+    """Sort files by categories in input directory"""
+    return main()
 
 @set_commands("exit", "close", "good bye")
 @input_error
