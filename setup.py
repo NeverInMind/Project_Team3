@@ -17,7 +17,7 @@ setuptools.setup(
 	# Имя дистрибутива пакета. Оно должно быть уникальным, поэтому добавление вашего имени пользователя в конце является обычным делом.
 	name="assistant_ostap",
 	# Номер версии вашего пакета. Обычно используется семантическое управление версиями.
-	version="0.0.1",
+	version="0.0.2",
 	# Имя автора.
 	author="GoIt Team 3",
 	# Его почта.
@@ -43,5 +43,5 @@ setuptools.setup(
 	# Требуемая версия Python.
 	python_requires='>=3.6',
 	include_package_data=True,
-    entry_points={'console_scripts': ['Ostap = assistant_ostap.assistant_ostap.main:main']}
+    entry_points={'console_scripts': ['Ostap = assistant_ostap.main:main']}
 )
