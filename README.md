@@ -15,6 +15,11 @@ Just write down in your console:
 
 P.S. don't forget that I need installed Python on your computer :wink:
 
+How to start me 
+Just call me in your console ``Ostap``
+
+
+
 What I can do
 * Create a contact book for you by command ``add``
 * Tell us who has a birthday in the coming N days ``show nearbday N`` (N - numbers of days)
