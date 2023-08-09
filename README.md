@@ -5,7 +5,10 @@
 
 
 How to install me
+Just write down in your console:
 ``pip install assistant-ostap==0.0.2``
+
+P.S. don't forget that I need installed Python on your computer :wink:
 
 What I can do
 * Create a contact book for you by command ``add``
