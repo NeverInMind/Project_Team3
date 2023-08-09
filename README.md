@@ -5,7 +5,7 @@
 
 
 How to install me
-``pip install package``
+``pip install assistant-ostap==0.0.2``
 
 What I can do
 * Create a contact book for you by command ``add``
