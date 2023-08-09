@@ -143,7 +143,7 @@ def change(*args):
     name_exists = bool(data.get(name.value))
 
     if not name_exists:
-        msg = f"Name {name} doesn`t exists. "\
+        msg = f"Name {name} doesn`t exist. "\
             "If you want to add it, please type 'add user <name> <phone number>'."
     else:
         msg = data[name.value].change_phone(old_phone, new_phone)
@@ -177,7 +177,7 @@ def delete_user(*args):
     name_exists = bool(data.get(name.value))
 
     if not name_exists:
-        return f"Name {name} doesn`t exists."
+        return f"Name {name} doesn`t exist."
     else:
         data.delete_record(name)
 
@@ -188,7 +188,7 @@ def delete_user(*args):
 @set_commands("del phone")
 @input_error
 def delete_phone(*args):
-    """Take as input username and phone number and delete that phone"""
+    """Takes as input username and phone number and deletes that phone"""
     name = classes.Name(args[0])
     phone = classes.Phone(args[1])
 
@@ -196,7 +196,7 @@ def delete_phone(*args):
     name_exists = bool(data.get(name.value))
 
     if not name_exists:
-        msg = f"Name {name} doesn`t exists."
+        msg = f"Name {name} doesn`t exist."
     else:
         msg = data[name.value].delete_phone(phone)
 
@@ -236,7 +236,7 @@ def phone(*args):
     name_exists = bool(data.get(name.value))
 
     if not name_exists:
-        return f"Name {name} doesn`t exists. "\
+        return f"Name {name} doesn`t exist. "\
             "If you want to add it, please type 'add <name> <phone number>'."
     else:
         # У цьому рядку список телефонів перетворюється у рядок,
@@ -389,6 +389,100 @@ def sort_notes(*args):
 def sort_files(*args):
     """Sort files by categories in input directory"""
     return main()
+
+
+@set_commands("add_phone")
+@input_error
+def add_phone(*args):
+    """Takes as input username, phone number and adds to the contact."""
+
+    name = classes.Name(args[0])
+    if classes.Phone.is_valid_phone(args[1]):
+        new_phone = classes.Phone(args[1])
+    else:
+        raise classes.WrongPhone
+
+    data = classes.AddressBook.open_file("data.json")
+    name_exists = bool(data.get(name.value))
+    if not name_exists:
+        msg = f"Name {name} doesn't exist. "\
+            "If you want to add it, please use add command."
+    else:
+        msg = data[name.value].add_phone(new_phone)
+
+    data.write_to_file("data.json")
+    return msg
+
+
+@set_commands("change_birthday")
+@input_error
+def change_birthday(*args):
+    """Takes as input username, birthday date
+    and changes the corresponding data."""
+
+    name = classes.Name(args[0])
+    if classes.Birthday.is_valid_date(args[1]):
+        new_birthday = classes.Birthday(args[1])
+    else:
+        raise classes.WrongDate(
+                "Invalid date. Please enter birthday in format 'DD.MM.YYYY'.")
+
+    data = classes.AddressBook.open_file("data.json")
+    name_exists = bool(data.get(name.value))
+    if not name_exists:
+        msg = f"Name {name} doesn`t exist. "\
+            "If you want to add it, please type 'add user <name> <phone number>'."
+    else:
+        msg = data[name.value].change_birthday(new_birthday)
+
+    data.write_to_file("data.json")
+    return msg
+
+
+@set_commands("change_address")
+@input_error
+def change_address(*args):
+    """Takes as input username, new address and changes the corresponding data."""
+
+    if len(args) < 5:
+        return "Not valid command format."\
+            "Please enter correct address data"
+    name = classes.Name(args[0])
+    data = classes.AddressBook.open_file("data.json")
+    name_exists = bool(data.get(name.value))
+    if not name_exists:
+        msg = f"Name {name} doesn't exist. "\
+            "If you want to add it, please use add command."
+    else:
+        address = classes.Address(street=args[1], city=args[2],
+                              country=args[3], postcode=args[4])
+        msg = data[name.value].change_address(address)
+
+    data.write_to_file("data.json")
+    return msg
+
+
+@set_commands("change_email")
+@input_error
+def change_email(*args):
+    """Takes as input username, new email and changes the corresponding data."""
+
+    name = classes.Name(args[0])
+    data = classes.AddressBook.open_file("data.json")
+    name_exists = bool(data.get(name.value))
+    if not name_exists:
+        msg = f"Name {name} doesn't exist. "\
+            "If you want to add it, please use add command."
+    else:
+        email_value = args[1]
+        if not classes.Email.is_valid_email(email_value):
+            raise classes.WrongEmail
+        new_email = classes.Email(email_value)
+        msg = data[name.value].change_email(new_email)
+
+    data.write_to_file("data.json")
+    return msg
+
 
 @set_commands("exit", "close", "good bye")
 @input_error
