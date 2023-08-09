@@ -3,10 +3,11 @@
 
 <img src="https://img.shields.io/badge/made%20by-GoIT Team 3-blue.svg" >
 
-Опис на інших мовах: <ul>
-    <li><a href="https://github.com/NeverInMind/Project_Team3/dev/README.md"><img src="https://em-content.zobj.net/thumbs/120/apple/354/flag-ukraine_1f1fa-1f1e6.png" alt="UA"></a></li>
-    <li><a href="https://github.com/NeverInMind/Project_Team3/dev/README.ua.md"><img src="https://em-content.zobj.net/thumbs/120/apple/354/flag-united-states_1f1fa-1f1f8.png" alt="EN"></a></li>
-</ul>
+Опис на інших мовах: 
+        <a href="https://github.com/NeverInMind/Project_Team3/dev/README.md">
+        <img src="https://em-content.zobj.net/thumbs/120/apple/354/flag-ukraine_1f1fa-1f1e6.png" alt="UA" width="40" height="40"></a>
+        <a href="https://github.com/NeverInMind/Project_Team3/dev/README.ua.md">
+        <img src="https://em-content.zobj.net/thumbs/120/apple/354/flag-united-states_1f1fa-1f1f8.png" alt="EN" width="40" height="40"></a>
 
 Як мене встановити
 Просто напиши в власній консолі:
