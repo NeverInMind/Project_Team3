@@ -103,7 +103,7 @@ def get_results(path: Path):
 
 def main():
     try:
-        path = Path(sys.argv[1])
+        path = Path(input('Enter path of folder:'))
     except IndexError:
         return 'No path to folder'
 
