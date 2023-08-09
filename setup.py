@@ -1,6 +1,6 @@
 from setuptools import setup, find_namespace_packages
 
-setup(name='power9bot',
+setup(name='Ostap',
       version='1.0.1',
       description='Assistant Ostap',
       url='https://github.com/NeverInMind/Project_Team3/',
