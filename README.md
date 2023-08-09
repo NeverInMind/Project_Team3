@@ -10,13 +10,12 @@ Description in other languages:
         <img src="https://em-content.zobj.net/thumbs/120/apple/354/flag-united-states_1f1fa-1f1f8.png" alt="EN" width="40" height="40"></a>
 
 How to install me
-Just write down in your console:
-``pip install assistant-ostap==0.0.2``
+* Just write down in your console: ``pip install assistant-ostap==0.0.2``
 
 P.S. don't forget that I need installed Python on your computer :wink:
 
 How to start me 
-Just call me in your console by command ``Ostap``
+* Just call me in your console by command ``Ostap``
 
 
 
