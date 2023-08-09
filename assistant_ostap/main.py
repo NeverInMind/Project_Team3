@@ -4,9 +4,9 @@ import re
 from fuzzywuzzy import fuzz, process
 import readline
 
-import Ostap.Ostap.classes as classes
-from Ostap.Ostap.handlers import commands
-from Ostap.Ostap.notes import NoteBook
+import assistant_ostap.assistant_ostap.classes as classes
+from assistant_ostap.assistant_ostap.handlers import commands
+from assistant_ostap.assistant_ostap.notes import NoteBook
 
 
 # Даний метод відповідає за автозаповнення команд. Якщо у консолі

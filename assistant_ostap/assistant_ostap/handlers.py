@@ -3,9 +3,9 @@ import platform
 import sys
 from rich.console import Console
 from rich.table import Table
-import Ostap.Ostap.classes as classes
-from Ostap.Ostap.notes import NoteBook
-from Ostap.Ostap.clean import main
+import assistant_ostap.assistant_ostap.classes as classes
+from assistant_ostap.assistant_ostap.notes import NoteBook
+from assistant_ostap.assistant_ostap.clean import main
 import re
 
 
