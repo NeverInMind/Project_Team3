@@ -15,6 +15,8 @@ class WrongDate(Exception):
 class WrongEmail(Exception):
     pass
 
+class WrongDays(Exception):
+    pass
 
 class Field:
     def __init__(self, value):
@@ -77,6 +79,8 @@ class Birthday(Field):
         # Валідація дня народження є значно простішою, ніж номеру телефону.
         # Якщо ввід користувача перетворюється у об'єкт datetime то дата валідна
         try:
+            if date == '':
+                return True
             datetime.strptime(str(date), "%d.%m.%Y")
             return True
         except ValueError:
@@ -156,7 +160,7 @@ class Record:
         birthday = f"Birthday: {self.birthday}" if self.birthday.value else "Birthday:"
         address_str = f"Address: {self.address}" if self.address else ""
         email_str = f"Email: {self.email}" if self.email else ""
-        return f"{self.name.value}: ''{phones}, {birthday}, {address_str}, {email_str}"
+        return f"{self.name.value}: {phones}, {birthday}, {address_str}, {email_str}"
 
     def __repr__(self):
         return str(self)

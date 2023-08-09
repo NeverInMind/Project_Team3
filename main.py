@@ -32,7 +32,7 @@ def parse_command(user_input: str):
     # кщо ж команда складаєтсья з одного слова(блок else),
     # то аргументами є все, починаючи з другого елементу
     match = re.search(
-        r"^show\s|^good\s|^del\s|^sort\s", user_input.lower())
+        r"^show\s|^good\s|^del\s|^sort\s|^change\s|^add\s", user_input.lower())
     try:
         if match:
             user_command = " ".join(user_input.split()[:2]).lower()
