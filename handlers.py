@@ -41,6 +41,19 @@ def input_error(func):
     inner.__doc__ = func.__doc__
     return inner
 
+@set_commands("help")
+@input_error
+def help_command(*args):
+    """Show all commands available."""
+    # Даний метод виводить користувачу перелік усіх команд з описом.
+    # Створюється рядок all_commands, що наповнюється у циклі.
+    # command це ключі в словнику commands.
+    # func - значення. func.__doc__ це рядок документації, що додатково
+    # прив'язувався до функції у декораторі input_error
+    all_commands = ""
+    for command, func in commands.items():
+        all_commands += f"{command}: {func.__doc__}\n"
+    return all_commands
 
 
 @set_commands("add")
@@ -57,19 +70,21 @@ def add(*args):
     else:
         raise classes.WrongPhone
     birthday = None
+    address = None
+    email = None
     if len(args) > 2:
         if classes.Birthday.is_valid_date(args[2]):
             birthday = classes.Birthday(args[2])
         else:
             raise classes.WrongDate
-    address = classes.Address(street=args[3], city=args[4],
+        address = classes.Address(street=args[3], city=args[4],
                               country=args[5], postcode=args[6])
 
-    email_value = args[7]
-    if not classes.Email.is_valid_email(email_value):
-        raise classes.WrongEmail
+        email_value = args[7]
+        if not classes.Email.is_valid_email(email_value):
+            raise classes.WrongEmail
 
-    email = classes.Email(email_value)
+        email = classes.Email(email_value)
     # У змінній data зберігається екземпляр класу AddressBook із записаними раніше контактами
     # Змінна name_exists показує, чи існує контакт з таким ім'ям у data
     data = classes.AddressBook.open_file("data.json")
@@ -92,38 +107,6 @@ def add(*args):
 
     data.write_to_file("data.json")
     return msg
-
-
-@set_commands("birthday")
-@input_error
-def days_to_birthday_handler(*args):
-    """Take as input username and show the number of days until his birthday"""
-    name = classes.Name(args[0])
-    data = classes.AddressBook.open_file("data.json")
-    name_exists = bool(data.get(name.value))
-
-    if not name_exists:
-        return f"User {name} not found"
-
-    return data[name.value].days_to_birthday()
-
-
-@set_commands("showbd")
-@input_error
-def show_birthdays_handler(*args):
-    """Take as input number of days and show the list of birthdays.
-    The MAX number of days is 365"""
-    try:
-        value = int(args[0])
-    except:
-        return "Please enter the valid command: showbd number_of_days"
-    if type(value) == int and value > 0:
-        data = classes.AddressBook.open_file("data.json")
-        if value > 365:
-            value = 365
-        return data.show_birthday(value)
-    else:
-        return "Please input a valid number of days"
 
 
 @set_commands("change")
@@ -150,245 +133,6 @@ def change(*args):
 
     data.write_to_file("data.json")
     return msg
-
-
-@set_commands("clear")
-@input_error
-def clear(*args):
-    """Clear the console."""
-    # Дана функція відповідальна за очищення консолі.
-    # Darwin це macOS
-    system = platform.system()
-    if system == "Windows":
-        os.system("cls")
-    elif system in ("Linux", "Darwin"):
-        os.system("clear")
-    else:
-        return "Sorry, this command is not available on your operating system."
-
-
-@set_commands("del user")
-@input_error
-def delete_user(*args):
-    """Take as input username and delete that user"""
-    name = classes.Name(args[0])
-
-    data = classes.AddressBook.open_file("data.json")
-    name_exists = bool(data.get(name.value))
-
-    if not name_exists:
-        return f"Name {name} doesn`t exist."
-    else:
-        data.delete_record(name)
-
-    data.write_to_file("data.json")
-    return f"User {name} deleted successfully."
-
-
-@set_commands("del phone")
-@input_error
-def delete_phone(*args):
-    """Takes as input username and phone number and deletes that phone"""
-    name = classes.Name(args[0])
-    phone = classes.Phone(args[1])
-
-    data = classes.AddressBook.open_file("data.json")
-    name_exists = bool(data.get(name.value))
-
-    if not name_exists:
-        msg = f"Name {name} doesn`t exist."
-    else:
-        msg = data[name.value].delete_phone(phone)
-
-    data.write_to_file("data.json")
-    return msg
-
-
-@set_commands("hello")
-@input_error
-def hello(*args):
-    """Greet user."""
-    return "How can I help you?"
-
-
-@set_commands("help")
-@input_error
-def help_command(*args):
-    """Show all commands available."""
-    # Даний метод виводить користувачу перелік усіх команд з описом.
-    # Створюється рядок all_commands, що наповнюється у циклі.
-    # command це ключі в словнику commands.
-    # func - значення. func.__doc__ це рядок документації, що додатково
-    # прив'язувався до функції у декораторі input_error
-    all_commands = ""
-    for command, func in commands.items():
-        all_commands += f"{command}: {func.__doc__}\n"
-    return all_commands
-
-
-@set_commands("phone")
-@input_error
-def phone(*args):
-    """Take as input username and show user`s phone number."""
-    name = classes.Name(args[0])
-
-    data = classes.AddressBook.open_file("data.json")
-    name_exists = bool(data.get(name.value))
-
-    if not name_exists:
-        return f"Name {name} doesn`t exist. "\
-            "If you want to add it, please type 'add <name> <phone number>'."
-    else:
-        # У цьому рядку список телефонів перетворюється у рядок,
-        # де номері перелічені через кому
-        phone_numbers = ", ".join(str(phone)
-                                  for phone in data[name.value].phones)
-        if phone_numbers:
-            return f"Phone numbers for {name}: {phone_numbers}."
-        else:
-            return f"There are no phone numbers for user {name}"
-
-
-@set_commands("show all")
-@input_error
-def show_all(*args):
-    """Show all users or notes"""
-    field = args[0].lower()
-    # Код функції show_all має саме такий вигляд тому, що AddressBook
-    # це ітератор
-    if field not in ("users", "notes"):
-        return f"Unknown field {field}. Please type 'users' or 'notes'"
-    if field == "users":
-        return classes.AddressBook.open_file("data.json")
-    return NoteBook.read_from_file()
-
-
-@set_commands("search")
-@input_error
-def search_handler(*args):
-    """Take as input searched field(name, phone, tag or text)
-    and the text to be found. Returns all found users"""
-    # у даній функції користувачу потрібно обрати, у яких полях
-    # відбуватиметься пошук(наразі це name або phone) та ввести значення для пошуку.
-    #  Функція повертає рядок з переліком усіх контаків
-    field = args[0]
-    text = " ".join(args[1:])
-    if field.lower() not in ("name", "phone", "email","tag","text"):
-        return f"Unknown field '{field}'.\nTo see more info enter 'help'"
-
-    nb = NoteBook.read_from_file()
-    if field == "text":
-        return nb.find_notes_by_text(text)
-    elif field == "tag":
-        return nb.find_notes_by_keyword(text)
-
-    ab = classes.AddressBook.open_file("data.json")
-    result = ab.search(field, text)
-    if not result:
-        return "There are no users matching"
-    return "\n".join([str(rec) for rec in result])
-
-
-@set_commands("address")
-@input_error
-def address(*args):
-    """Take the input username and show the address"""
-    name = classes.Name(args[0])
-
-    data = classes.AddressBook.open_file("data.json")
-    name_exists = bool(data.get(name.value))
-
-    if not name_exists:
-        return f"Name {name} doesn't exist"
-
-    else:
-        address_str = str(data[name.value].address)
-        if address_str:
-            return f"Address for {name}: {address_str}."
-
-        else:
-            return f"There is no address for user {name}."
-
-
-@set_commands("email")
-@input_error
-def email(*args):
-    """Take the input username and show the email"""
-    name = classes.Name(args[0])
-    data = classes.AddressBook.open_file("data.json")
-    name_exists = bool(data.get(name.value))
-
-    if not name_exists:
-        return f"Name {name} doesn't exist."
-
-    else:
-        email_str = str(data[name.value].email)
-
-        if email_str:
-            return f"Email for {name}: {email_str}."
-
-        else:
-            return f"There isn't email for user {name}."
-
-
-@set_commands("create_note")
-@input_error
-def create_note(*args):
-    """Take as input the text of the note in quotes and adds it to the notebook"""
-    text = " ".join(args)
-    nb = NoteBook.read_from_file()
-    nb.add_note(text)
-
-    nb.save_to_file()
-    return "Note added successfully."
-
-
-@set_commands("edit_note")
-@input_error
-def edit_note(*args):
-    """Take as input note id and change selected note"""
-    note_id = args[0]
-    nb = NoteBook.read_from_file()
-    nb.edit_note(note_id)
-
-    nb.save_to_file()
-    return "Note edited successfully."
-
-
-@set_commands("del note")
-@input_error
-def del_note(*args):
-    """Take the input username and show the address"""
-    name = classes.Name(args[0])
-    data = classes.AddressBook.open_file("data.csv")
-    name_exists = bool(data.get(name.value))
-
-    if not name_exists:
-        return f"Name {name} doesn't exist."
-
-    else:
-        email_str = str(data[name.value].email)
-
-        if email_str:
-            return f"Email for {name}: {email_str}."
-
-        else:
-            return f"There isn't email for user {name}."
-
-
-@set_commands("sort notes")
-@input_error
-def sort_notes(*args):
-    """Takes a keyword as input and sorts notes by it"""
-    keyword = args[0]
-    nb = NoteBook.read_from_file()
-    return nb.sort_notes(keyword)
-
-@set_commands("sort files")
-@input_error
-def sort_files(*args):
-    """Sort files by categories in input directory"""
-    return main()
 
 
 @set_commands("add_phone")
@@ -482,6 +226,256 @@ def change_email(*args):
 
     data.write_to_file("data.json")
     return msg
+
+
+@set_commands("clear")
+@input_error
+def clear(*args):
+    """Clear the console."""
+    # Дана функція відповідальна за очищення консолі.
+    # Darwin це macOS
+    system = platform.system()
+    if system == "Windows":
+        os.system("cls")
+    elif system in ("Linux", "Darwin"):
+        os.system("clear")
+    else:
+        return "Sorry, this command is not available on your operating system."
+
+
+@set_commands("birthday")
+@input_error
+def days_to_birthday_handler(*args):
+    """Take as input username and show the number of days until his birthday"""
+    name = classes.Name(args[0])
+    data = classes.AddressBook.open_file("data.json")
+    name_exists = bool(data.get(name.value))
+
+    if not name_exists:
+        return f"User {name} not found"
+
+    return data[name.value].days_to_birthday()
+
+
+@set_commands("showbd")
+@input_error
+def show_birthdays_handler(*args):
+    """Take as input number of days and show the list of birthdays.
+    The MAX number of days is 365"""
+    try:
+        value = int(args[0])
+    except:
+        return "Please enter the valid command: showbd number_of_days"
+    if type(value) == int and value > 0:
+        data = classes.AddressBook.open_file("data.json")
+        if value > 365:
+            value = 365
+        return data.show_birthday(value)
+    else:
+        return "Please input a valid number of days"
+
+
+@set_commands("del user")
+@input_error
+def delete_user(*args):
+    """Take as input username and delete that user"""
+    name = classes.Name(args[0])
+
+    data = classes.AddressBook.open_file("data.json")
+    name_exists = bool(data.get(name.value))
+
+    if not name_exists:
+        return f"Name {name} doesn`t exist."
+    else:
+        data.delete_record(name)
+
+    data.write_to_file("data.json")
+    return f"User {name} deleted successfully."
+
+
+@set_commands("del phone")
+@input_error
+def delete_phone(*args):
+    """Takes as input username and phone number and deletes that phone"""
+    name = classes.Name(args[0])
+    phone = classes.Phone(args[1])
+
+    data = classes.AddressBook.open_file("data.json")
+    name_exists = bool(data.get(name.value))
+
+    if not name_exists:
+        msg = f"Name {name} doesn`t exist."
+    else:
+        msg = data[name.value].delete_phone(phone)
+
+    data.write_to_file("data.json")
+    return msg
+
+
+@set_commands("show phone")
+@input_error
+def phone(*args):
+    """Take as input username and show user`s phone number."""
+    name = classes.Name(args[0])
+
+    data = classes.AddressBook.open_file("data.json")
+    name_exists = bool(data.get(name.value))
+
+    if not name_exists:
+        return f"Name {name} doesn`t exist. "\
+            "If you want to add it, please type 'add <name> <phone number>'."
+    else:
+        # У цьому рядку список телефонів перетворюється у рядок,
+        # де номері перелічені через кому
+        phone_numbers = ", ".join(str(phone)
+                                  for phone in data[name.value].phones)
+        if phone_numbers:
+            return f"Phone numbers for {name}: {phone_numbers}."
+        else:
+            return f"There are no phone numbers for user {name}"
+
+
+@set_commands("show all")
+@input_error
+def show_all(*args):
+    """Show all users or notes"""
+    field = args[0].lower()
+    # Код функції show_all має саме такий вигляд тому, що AddressBook
+    # це ітератор
+    if field not in ("users", "notes"):
+        return f"Unknown field {field}. Please type 'users' or 'notes'"
+    if field == "users":
+        return classes.AddressBook.open_file("data.json")
+    return NoteBook.read_from_file()
+
+
+@set_commands("search")
+@input_error
+def search_handler(*args):
+    """Take as input searched field(name, phone, tag or text)
+    and the text to be found. Returns all found users"""
+    # у даній функції користувачу потрібно обрати, у яких полях
+    # відбуватиметься пошук(наразі це name або phone) та ввести значення для пошуку.
+    #  Функція повертає рядок з переліком усіх контаків
+    field = args[0]
+    text = " ".join(args[1:])
+    if field.lower() not in ("name", "phone", "email","tag","text"):
+        return f"Unknown field '{field}'.\nTo see more info enter 'help'"
+
+    nb = NoteBook.read_from_file()
+    if field == "text":
+        return nb.find_notes_by_text(text)
+    elif field == "tag":
+        return nb.find_notes_by_keyword(text)
+
+    ab = classes.AddressBook.open_file("data.json")
+    result = ab.search(field, text)
+    if not result:
+        return "There are no users matching"
+    return "\n".join([str(rec) for rec in result])
+
+
+@set_commands("show address")
+@input_error
+def address(*args):
+    """Take the input username and show the address"""
+    name = classes.Name(args[0])
+
+    data = classes.AddressBook.open_file("data.json")
+    name_exists = bool(data.get(name.value))
+
+    if not name_exists:
+        return f"Name {name} doesn't exist"
+
+    else:
+        address_str = str(data[name.value].address)
+        if address_str:
+            return f"Address for {name}: {address_str}."
+
+        else:
+            return f"There is no address for user {name}."
+
+
+@set_commands("show email")
+@input_error
+def email(*args):
+    """Take the input username and show the email"""
+    name = classes.Name(args[0])
+    data = classes.AddressBook.open_file("data.json")
+    name_exists = bool(data.get(name.value))
+
+    if not name_exists:
+        return f"Name {name} doesn't exist."
+
+    else:
+        email_str = str(data[name.value].email)
+
+        if email_str:
+            return f"Email for {name}: {email_str}."
+
+        else:
+            return f"There isn't email for user {name}."
+
+
+@set_commands("create_note")
+@input_error
+def create_note(*args):
+    """Take as input the text of the note in quotes and adds it to the notebook"""
+    text = " ".join(args)
+    nb = NoteBook.read_from_file()
+    nb.add_note(text)
+
+    nb.save_to_file()
+    return "Note added successfully."
+
+
+@set_commands("edit_note")
+@input_error
+def edit_note(*args):
+    """Take as input note id and change selected note"""
+    note_id = args[0]
+    nb = NoteBook.read_from_file()
+    nb.edit_note(note_id)
+
+    nb.save_to_file()
+    return "Note edited successfully."
+
+
+@set_commands("del note")
+@input_error
+def del_note(*args):
+    """Take the input username and show the address"""
+    name = classes.Name(args[0])
+    data = classes.AddressBook.open_file("data.csv")
+    name_exists = bool(data.get(name.value))
+
+    if not name_exists:
+        return f"Name {name} doesn't exist."
+
+    else:
+        email_str = str(data[name.value].email)
+
+        if email_str:
+            return f"Email for {name}: {email_str}."
+
+        else:
+            return f"There isn't email for user {name}."
+
+
+@set_commands("sort notes")
+@input_error
+def sort_notes(*args):
+    """Takes a keyword as input and sorts notes by it"""
+    keyword = args[0]
+    nb = NoteBook.read_from_file()
+    return nb.sort_notes(keyword)
+
+
+@set_commands("sort files")
+@input_error
+def sort_files(*args):
+    """Sort files by categories in input directory"""
+    return main()
 
 
 @set_commands("exit", "close", "good bye")

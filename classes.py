@@ -115,6 +115,8 @@ class Email:
 
     @staticmethod
     def is_valid_email(email):
+        if email == '':
+            return True
         match = re.search(
             r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email)
         return bool(match)
@@ -151,10 +153,10 @@ class Record:
         # Рядкове представлення Record у форматі
         # Володя: +123456987456, 23456987456. Birthday: 21.01.1978
         phones = ", ".join([str(phone) for phone in self.phones])
-        birthday = f"Birthday: {self.birthday}" if self.birthday.value else ""
+        birthday = f"Birthday: {self.birthday}" if self.birthday.value else "Birthday:"
         address_str = f"Address: {self.address}" if self.address else ""
         email_str = f"Email: {self.email}" if self.email else ""
-        return f"{self.name.value}: {phones}, {birthday}, {address_str}, {email_str}"
+        return f"{self.name.value}: ''{phones}, {birthday}, {address_str}, {email_str}"
 
     def __repr__(self):
         return str(self)
@@ -295,14 +297,14 @@ class AddressBook(UserDict):
         for name, record in self.data.items():
             json_data[name] = {
                 "phones": [phone.value for phone in record.phones],
-                "birthday": record.birthday.value,
+                "birthday": record.birthday.value if record.birthday is not None else '',
                 "address": {
-                    "street": record.address.street,
-                    "city": record.address.city,
-                    "country": record.address.country,
-                    "postcode": record.address.postcode,
+                    "street": record.address.street if record.address is not None else '',
+                    "city": record.address.city if record.address is not None else '',
+                    "country": record.address.country if record.address is not None else '',
+                    "postcode": record.address.postcode if record.address is not None else '',
                 },
-                "email": record.email.value
+                "email": record.email.value if record.email is not None else ''
             }
         with open(filename, "w", encoding="utf-8") as file:
             json.dump(json_data, file, indent=4, ensure_ascii=False)

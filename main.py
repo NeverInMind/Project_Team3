@@ -68,7 +68,7 @@ def main():
     # Вони відповідають за те, при натисканні на яку кнопку відбуватиметься автодоповнення.
     readline.set_completer(completer)
     readline.parse_and_bind("tab: complete")
-
+    print("How can I help you?")
     while True:
         user_input = input("Enter command: ")
         result = parse_command(user_input)
