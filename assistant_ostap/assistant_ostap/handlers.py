@@ -144,6 +144,8 @@ def add_phone(*args):
 def create_note(*args):
     """Take as input the text of the note in quotes and adds it to the notebook"""
     text = " ".join(args)
+    if not text.strip():
+        return "Please enter the text of the note"
     nb = NoteBook.read_from_file()
     nb.add_note(text)
 
@@ -300,23 +302,14 @@ def delete_phone(*args):
 @set_commands("del note")
 @input_error
 def del_note(*args):
-    """Take the input username and show the address"""
-    name = classes.Name(args[0])
-    data = classes.AddressBook.open_file("data.csv")
-    name_exists = bool(data.get(name.value))
+    """Take as input note id and delete selected note"""
+    note_id = args[0]
+    nb = NoteBook.read_from_file()
+    nb.del_note(note_id)
 
-    if not name_exists:
-        return f"Name {name} doesn't exist."
-
-    else:
-        email_str = str(data[name.value].email)
-
-        if email_str:
-            return f"Email for {name}: {email_str}."
-
-        else:
-            return f"There isn't email for user {name}."
-
+    nb.save_to_file()
+    return "Note deleted successfully."
+    
 
 @set_commands("show all")
 @input_error
