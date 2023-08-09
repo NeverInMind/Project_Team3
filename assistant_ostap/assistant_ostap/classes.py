@@ -15,8 +15,14 @@ class WrongDate(Exception):
 class WrongEmail(Exception):
     pass
 
+
 class WrongDays(Exception):
     pass
+
+
+class NoName(Exception):
+    pass
+
 
 class Field:
     def __init__(self, value):
@@ -40,19 +46,32 @@ class Field:
 
 
 class Name(Field):
+    @staticmethod
+    def is_valid_name(name):
+        if name.strip() == '':
+            return False
+        else:
+            return True
+
     @property
     def value(self):
         return self._value
 
     @value.setter
     def value(self, val):
-        self._value = val
+        if self.is_valid_name(val):
+            self._value = val
+        else:
+            raise NoName("You missed to enter name. "
+                             "Please check the value and try again")
 
 
 class Phone(Field):
 
     @staticmethod
     def is_valid_phone(phone):
+        if phone == '':
+            return True
         # Валідація номеру телефону відбувається за
         # допомогою регулярнго виразу, що означає: необов'язково +, потім цифра від 1 до 9
         # та 11 цифр від 0 до 9. Тобто валідними будуть такі номери +123456987456 та 123456987456,
@@ -170,6 +189,9 @@ class Record:
             return f"User {self.name.value} already has {phone} phone number."
         else:
             self.phones.append(phone)
+        # Список телефонів приводиться до множини для того, щоб виключити можливість
+        # повторення номеру телефону
+        self.phones = list(set(self.phones))
         return f"Phone number {phone} is added successfully for user {self.name.value}."
 
     def change_phone(self, old_number: Phone, new_number: Phone):

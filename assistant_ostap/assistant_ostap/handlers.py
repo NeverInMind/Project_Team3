@@ -36,6 +36,8 @@ def input_error(func):
             return "Invalid date. Please enter birthday in format 'DD.MM.YYYY'."
         except classes.WrongEmail:
             return "Invalid email address. Please enter a correct email address."
+        except classes.NoName:
+            return "Name is empty. Please try again"
         except KeyError:
             return "Id not found. Please check the value and try again"
             
@@ -67,15 +69,33 @@ def help_command(*args):
 def add(*args):
     """Take as input username, phone number, birthday, address, email and add them to the base.
     If username already exist add phone number to this user."""
-    name = classes.Name(input('Enter name:'))
+    name = input('Enter name:')
+    if classes.Name.is_valid_name(name):
+        name = classes.Name(name)
+    else:
+        raise classes.NoName
     # Два блоки if, розміщених нижче відповідають за правильність введення телефону
     # та дня народження. Якщо значення невалідне, викликається помилка, що потім обробляється
     # деораторот input_error
     phone_number = input('Enter phone number:') 
     if classes.Phone.is_valid_phone(phone_number):
-        phone_number = [classes.Phone(phone_number)]
+        phone_number = classes.Phone(phone_number)
     else:
         raise classes.WrongPhone
+    # У змінній data зберігається екземпляр класу AddressBook із записаними раніше контактами
+    # Змінна name_exists показує, чи існує контакт з таким ім'ям у data
+    data = classes.AddressBook.open_file("data.json")
+    name_exists = bool(data.get(name.value))
+
+    # Тут відбувається перевірка, чи ім'я вже є у списку контактів
+    # Якщо контакт відсутній, створюється новий Record.
+    # Якщо присутній - до існуючого екземпляру Record додається номер телефону
+    if name_exists and phone_number:
+        # Методи класу Record повертають повідомлення для користувача
+        # Дані повідомлення записуються у змінну та повертаються з функції
+        # для показу користувачу
+        msg = data[name.value].add_phone(phone_number)
+        return msg
     birthday = input('Enter birthday:')
     if classes.Birthday.is_valid_date(birthday):
         birthday = classes.Birthday(birthday)
@@ -92,28 +112,13 @@ def add(*args):
         raise classes.WrongEmail
 
     email = classes.Email(email_value)
-    # У змінній data зберігається екземпляр класу AddressBook із записаними раніше контактами
-    # Змінна name_exists показує, чи існує контакт з таким ім'ям у data
-    data = classes.AddressBook.open_file("data.json")
-    name_exists = bool(data.get(name.value))
 
-    # Тут відбувається перевірка, чи ім'я вже є у списку контактів
-    # Якщо контакт відсутній, створюється новий Record.
-    # Якщо присутній - до існуючого екземпляру Record додається номер телефону
-    if name_exists and phone_number:
-        # Методи класу Record повертають повідомлення для користувача
-        # Дані повідомлення записуються у змінну та повертаються з функції
-        # для показу користувачу
-        msg = data[name.value].add_phone(phone_number)
-    elif not phone_number:
-        raise IndexError
-    else:
-        record = classes.Record(name, phone_number, birthday, address, email)
-        data.add_record(record)
-        msg = f"User {name} added successfully."
+    record = classes.Record(name, [phone_number], birthday, address, email)
+    data.add_record(record)
+    msg = f"User {name} added successfully."
 
     data.write_to_file("data.json")
-    return msg
+
 
 
 @set_commands("add phone")
@@ -144,8 +149,6 @@ def add_phone(*args):
 def create_note(*args):
     """Take as input the text of the note in quotes and adds it to the notebook"""
     text = " ".join(args)
-    if not text.strip():
-        return "Please enter the text of the note"
     nb = NoteBook.read_from_file()
     nb.add_note(text)
 
@@ -302,14 +305,23 @@ def delete_phone(*args):
 @set_commands("del note")
 @input_error
 def del_note(*args):
-    """Take as input note id and delete selected note"""
-    note_id = args[0]
-    nb = NoteBook.read_from_file()
-    nb.del_note(note_id)
+    """Take the input username and show the address"""
+    name = classes.Name(args[0])
+    data = classes.AddressBook.open_file("data.csv")
+    name_exists = bool(data.get(name.value))
 
-    nb.save_to_file()
-    return "Note deleted successfully."
-    
+    if not name_exists:
+        return f"Name {name} doesn't exist."
+
+    else:
+        email_str = str(data[name.value].email)
+
+        if email_str:
+            return f"Email for {name}: {email_str}."
+
+        else:
+            return f"There isn't email for user {name}."
+
 
 @set_commands("show all")
 @input_error
