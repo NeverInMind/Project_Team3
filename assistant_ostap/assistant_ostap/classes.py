@@ -170,9 +170,6 @@ class Record:
             return f"User {self.name.value} already has {phone} phone number."
         else:
             self.phones.append(phone)
-        # Список телефонів приводиться до множини для того, щоб виключити можливість
-        # повторення номеру телефону
-        self.phones = list(set(self.phones))
         return f"Phone number {phone} is added successfully for user {self.name.value}."
 
     def change_phone(self, old_number: Phone, new_number: Phone):
