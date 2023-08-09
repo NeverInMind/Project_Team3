@@ -16,7 +16,7 @@ Just write down in your console:
 P.S. don't forget that I need installed Python on your computer :wink:
 
 How to start me 
-Just call me in your console ``Ostap``
+Just call me in your console by command ``Ostap``
 
 
 
