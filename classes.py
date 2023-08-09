@@ -156,16 +156,18 @@ class Record:
         email_str = f"Email: {self.email}" if self.email else ""
         return f"{self.name.value}: {phones}, {birthday}, {address_str}, {email_str}"
 
-
     def __repr__(self):
         return str(self)
 
     def add_phone(self, phone: Phone):
-        self.phones.append(phone)
+        if phone in self.phones:
+            return f"User {self.name.value} already has {phone} phone number."
+        else:
+            self.phones.append(phone)
         # Список телефонів приводиться до множини для того, щоб виключити можливість
         # повторення номеру телефону
         self.phones = list(set(self.phones))
-        return f"Phone number {phone} for user {self.name.value} added successfully."
+        return f"Phone number {phone} is added successfully for user {self.name.value}."
 
     def change_phone(self, old_number: Phone, new_number: Phone):
         # У списку телефонів знаходиться індекс старого номера та змінює
@@ -200,6 +202,18 @@ class Record:
         result = (birthday - today).days
         birthday_str = birthday.strftime("%d %B")
         return f"The birthday of user {self.name} will be in {result} days, {birthday_str}"
+
+    def change_birthday(self, birthday: Birthday):
+        self.birthday = birthday
+        return f"Birthday date for user {self.name.value} is changed to {birthday} successfully."
+
+    def change_address(self, address: Address):
+        self.address = address
+        return f"Address {address} for user {self.name.value} is changed successfully."
+
+    def change_email(self, new_email: Email):
+        self.email = new_email
+        return f"Email {new_email} for user {self.name.value} is changed successfully."
 
 
 class AddressBook(UserDict):
