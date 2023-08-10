@@ -11,7 +11,7 @@
 
 ## Як мене встановити
 * Просто напиши в власній консолі:
-``pip install assistant-ostap==0.0.2``
+``pip install assistant-ostap``
 
 П.С. не забудь, що на твоєму комп'ютері має бути встановлений Python :wink:
 
