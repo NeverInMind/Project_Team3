@@ -53,7 +53,7 @@ class NoteBook(UserDict):
             readline.set_pre_input_hook(hook)
 
         set_initial_input(self.data[note_id].text)
-        user_input = input()
+        user_input = input('Enter new text for note:')
         new_note = Note(user_input, id=note_id)
         self.data[note_id] = new_note
         set_initial_input("")
